@@ -1,0 +1,9 @@
+.git
+.github
+docs
+participants
+README.md
+*.md
+__pycache__
+*.pyc
+.env

@@ -1,0 +1,39 @@
+FROM python:3.13-slim AS builder
+
+WORKDIR /app
+
+# Install build deps for numpy
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc g++ libc6-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:0.5 /uv /usr/local/bin/uv
+
+# Copy dependency manifests
+COPY app/pyproject.toml app/uv.lock ./
+
+# Install dependencies into a virtual environment using the lockfile
+RUN uv sync --frozen --no-install-project
+
+# Runtime stage
+FROM python:3.13-slim
+
+WORKDIR /app
+
+# Copy virtual environment from builder
+COPY --from=builder /app/.venv /app/.venv
+ENV PATH="/app/.venv/bin:$PATH"
+
+# Copy app code and resources
+COPY app/ ./
+COPY resources/ /app/resources/
+
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV RESOURCES_PATH=/app/resources
+ENV PORT=9999
+
+EXPOSE 9999
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "9999", "--no-access-log"]
