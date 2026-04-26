@@ -5,8 +5,7 @@ description = "Rinha de Backend 2026 — Fraud Detection API"
 requires-python = ">=3.13"
 
 dependencies = [
-    "fastapi==0.115.12",
-    "uvicorn[standard]==0.34.2",
+    "socketify>=0.0.31",
     "orjson==3.10.16",
     "numpy==2.2.5",
 ]
