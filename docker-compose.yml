@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     environment:
       - PORT=9999
-      - RESOURCES_PATH=/app/resources
+      - RESOURCES_PATH=/resources
     deploy:
       resources:
         limits:
@@ -20,7 +20,7 @@ services:
       dockerfile: Dockerfile
     environment:
       - PORT=9999
-      - RESOURCES_PATH=/app/resources
+      - RESOURCES_PATH=/resources
     deploy:
       resources:
         limits:

@@ -33,7 +33,7 @@ async def fraud_score(request: Request) -> ORJSONResponse:
 
 
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", "9999"))``
+    port = int(os.getenv("PORT", "9999"))
     uvicorn.run(
         "main:app",
         host="0.0.0.0",

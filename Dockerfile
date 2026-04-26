@@ -1,6 +1,6 @@
 FROM python:3.13-slim AS builder
 
-WORKDIR /app
+WORKDIR /
 
 # Install build deps for numpy
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=ghcr.io/astral-sh/uv:0.5 /uv /usr/local/bin/uv
 
 # Copy dependency manifests
-COPY app/pyproject.toml app/uv.lock ./
+COPY pyproject.toml uv.lock ./
 
 # Install dependencies into a virtual environment using the lockfile
 RUN uv sync --frozen --no-install-project
@@ -19,19 +19,19 @@ RUN uv sync --frozen --no-install-project
 # Runtime stage
 FROM python:3.13-slim
 
-WORKDIR /app
+WORKDIR /
 
 # Copy virtual environment from builder
-COPY --from=builder /app/.venv /app/.venv
-ENV PATH="/app/.venv/bin:$PATH"
+COPY --from=builder /.venv /.venv
+ENV PATH="/.venv/bin:$PATH"
 
 # Copy app code and resources
-COPY app/ ./
-COPY resources/ /app/resources/
+COPY *.py ./
+COPY resources/ /resources/
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
-ENV RESOURCES_PATH=/app/resources
+ENV RESOURCES_PATH=/resources
 ENV PORT=9999
 
 EXPOSE 9999
