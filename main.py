@@ -24,13 +24,13 @@ def ready(res, req):
 
 
 async def fraud_score(res, req):
-    # TODO:
-    # 1. Parse request body
-    # 2. Vectorize payload into 14-dim float32 vector
-    # 3. Find k=5 nearest neighbors in reference dataset
-    # 4. Calculate fraud_score = fraud_count / 5
-    # 5. Return {approved: fraud_score < 0.6, fraud_score: score}
     body = await res.get_json()
+
+    # TODO:
+    # 1. Vectorize payload into 14-dim float32 vector
+    # 2. Find k=5 nearest neighbors in reference dataset
+    # 3. Calculate fraud_score = fraud_count / 5
+    # 4. Return {approved: fraud_score < 0.6, fraud_score: score}
     res.end({"approved": True, "fraud_score": 0.0})
 
 
