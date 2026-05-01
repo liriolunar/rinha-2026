@@ -2,6 +2,7 @@ import os
 
 import orjson
 from socketify import App
+from vectorizer import vectorize, MCC_RISK
 
 app = App()
 app.json_serializer(orjson)
@@ -9,8 +10,8 @@ app.json_serializer(orjson)
 
 @app.on_start
 async def startup():
-    # TODO: load references, mcc_risk and normalization data on startup
-    pass
+    with open("resources/mcc_risk.json", "rb") as f:
+        MCC_RISK.update(orjson.loads(f.read()))
 
 
 @app.on_shutdown
@@ -24,10 +25,9 @@ def ready(res, req):
 
 
 async def fraud_score(res, req):
-    body = await res.get_json()
-
+    payload = await res.get_json()
+    vector = vectorize(payload)
     # TODO:
-    # 1. Vectorize payload into 14-dim float32 vector
     # 2. Find k=5 nearest neighbors in reference dataset
     # 3. Calculate fraud_score = fraud_count / 5
     # 4. Return {approved: fraud_score < 0.6, fraud_score: score}

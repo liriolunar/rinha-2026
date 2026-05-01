@@ -5,6 +5,9 @@ from numpy.typing import NDArray
 
 SENTINEL_NO_LAST_TX: float = -1.0
 
+# Module-level lookup table – populated once at startup by main.py
+MCC_RISK: dict[str, float] = {}
+
 _INV_MAX_AMOUNT = np.float32(1.0 / 10000)
 _INV_MAX_INSTALLMENTS = np.float32(1.0 / 12)
 _INV_AMOUNT_VS_AVG_RATIO = np.float32(1.0 / 10)
@@ -16,7 +19,7 @@ _INV_DAYS_IN_WEEK = np.float32(1.0 / 6)
 _INV_SECONDS = np.float32(1.0 / 86400.0)
 
 
-def vectorize(body: dict, mcc_risk: dict) -> NDArray[np.float32]:
+def vectorize(body: dict) -> NDArray[np.float32]:
     """Turn a raw API payload into a 14-dim float32 vector."""
     tx = body["transaction"]
     customer = body["customer"]
@@ -38,7 +41,7 @@ def vectorize(body: dict, mcc_risk: dict) -> NDArray[np.float32]:
     unknown_merchant = 0.0 if merchant["id"] in known_merchants else 1.0
 
     mcc = merchant["mcc"]
-    mcc_risk_val = mcc_risk.get(mcc, 0.5)
+    mcc_risk_val = MCC_RISK.get(mcc, 0.5)
 
     merchant_avg_amount = merchant["avg_amount"]
 
