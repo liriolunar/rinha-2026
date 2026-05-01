@@ -5,8 +5,18 @@ from numpy.typing import NDArray
 
 SENTINEL_NO_LAST_TX: float = -1.0
 
-# Module-level lookup table – populated once at startup by main.py
-MCC_RISK: dict[str, float] = {}
+_MCC_RISK: dict[str, float] = {
+    "5411": 0.15,
+    "5812": 0.30,
+    "5912": 0.20,
+    "5944": 0.45,
+    "7801": 0.80,
+    "7802": 0.75,
+    "7995": 0.85,
+    "4511": 0.35,
+    "5311": 0.25,
+    "5999": 0.50,
+}
 
 _INV_MAX_AMOUNT = np.float32(1.0 / 10000)
 _INV_MAX_INSTALLMENTS = np.float32(1.0 / 12)
@@ -41,7 +51,7 @@ def vectorize(body: dict) -> NDArray[np.float32]:
     unknown_merchant = 0.0 if merchant["id"] in known_merchants else 1.0
 
     mcc = merchant["mcc"]
-    mcc_risk_val = MCC_RISK.get(mcc, 0.5)
+    mcc_risk_val = _MCC_RISK.get(mcc, 0.5)
 
     merchant_avg_amount = merchant["avg_amount"]
 

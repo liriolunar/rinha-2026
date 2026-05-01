@@ -1,13 +1,11 @@
-version: "3.8"
-
 services:
   api1:
     build:
       context: .
       dockerfile: Dockerfile
-    environment:
-      - PORT=9999
-      - RESOURCES_PATH=/resources
+    platform: linux/amd64
+    networks:
+      - rinha
     deploy:
       resources:
         limits:
@@ -18,9 +16,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    environment:
-      - PORT=9999
-      - RESOURCES_PATH=/resources
+    platform: linux/amd64
+    networks:
+      - rinha
     deploy:
       resources:
         limits:
@@ -29,6 +27,7 @@ services:
 
   nginx:
     image: nginx:alpine
+    platform: linux/amd64
     ports:
       - "9999:9999"
     volumes:
@@ -36,8 +35,14 @@ services:
     depends_on:
       - api1
       - api2
+    networks:
+      - rinha
     deploy:
       resources:
         limits:
           cpus: "0.2"
           memory: "50MB"
+
+networks:
+  rinha:
+    driver: bridge

@@ -1,39 +1,23 @@
-FROM python:3.13-slim AS builder
-
-WORKDIR /
-
-# Install build deps for numpy
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc g++ libc6-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install uv
-COPY --from=ghcr.io/astral-sh/uv:0.5 /uv /usr/local/bin/uv
-
-# Copy dependency manifests
-COPY pyproject.toml uv.lock ./
-
-# Install dependencies into a virtual environment using the lockfile
-RUN uv sync --frozen --no-install-project
-
-# Runtime stage
 FROM python:3.13-slim
 
-WORKDIR /
+WORKDIR /app
 
-# Copy virtual environment from builder
-COPY --from=builder /.venv /.venv
-ENV PATH="/.venv/bin:$PATH"
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libuv1 libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy app code and resources
+RUN pip install --no-cache-dir \
+    numpy==2.2.5 \
+    orjson==3.10.16 \
+    socketify==0.0.31
+
 COPY *.py ./
-COPY resources/ /resources/
+COPY resources/ ./resources/
 
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV RESOURCES_PATH=/resources
-ENV PORT=9999
+ENV PORT=8080 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
-EXPOSE 9999
+EXPOSE 8080
 
 CMD ["python", "main.py"]
